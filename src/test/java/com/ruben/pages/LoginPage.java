@@ -1,12 +1,17 @@
 package com.ruben.pages;
 
+import com.ruben.framework.ConfigReader;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
+
 public class LoginPage {
+
     private final WebDriver driver;
+    private final WebDriverWait wait;
 
     private final By usernameInput = By.id("username");
     private final By passwordInput = By.id("password");
@@ -15,22 +20,39 @@ public class LoginPage {
 
     public LoginPage(WebDriver driver) {
         this.driver = driver;
+        this.wait = new WebDriverWait(
+                driver,
+                Duration.ofSeconds(ConfigReader.getIntProperty("timeout.seconds"))
+        );
+    }
+
+    public void open() {
+        driver.get(ConfigReader.getProperty("base.url") + "/login");
     }
 
     public void enterUsername(String username) {
-        driver.findElement(usernameInput).sendKeys(username);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(usernameInput))
+                .sendKeys(username);
     }
 
     public void enterPassword(String password) {
-        driver.findElement(passwordInput).sendKeys(password);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(passwordInput))
+                .sendKeys(password);
     }
 
-    public void clickLoginButton() {
-        driver.findElement(loginButton).click();
+    public void clickLogin() {
+        wait.until(ExpectedConditions.elementToBeClickable(loginButton))
+                .click();
     }
 
     public String getFlashMessage() {
-        WebElement message = driver.findElement(flashMessage);
-        return message.getText();
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(flashMessage))
+                .getText();
+    }
+
+    public void login(String username, String password) {
+        enterUsername(username);
+        enterPassword(password);
+        clickLogin();
     }
 }

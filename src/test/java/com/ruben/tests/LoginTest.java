@@ -11,23 +11,32 @@ public class LoginTest extends BaseTest {
     @Test
     void validLogin_shouldShowSuccessMessage() {
         step("Open login page");
-        driver.get("https://the-internet.herokuapp.com/login");
-
         LoginPage loginPage = new LoginPage(driver);
+        loginPage.open();
 
-        step("Enter username");
-        loginPage.enterUsername("tomsmith");
-
-        step("Enter password");
-        loginPage.enterPassword("SuperSecretPassword!");
-
-        step("Click login button");
-        loginPage.clickLoginButton();
+        step("Login with valid credentials");
+        loginPage.login("tomsmith", "SuperSecretPassword!");
 
         step("Verify success message");
         assertTrue(
                 loginPage.getFlashMessage().toLowerCase().contains("you logged into a secure area"),
                 "Expected success message, but got: " + loginPage.getFlashMessage()
+        );
+    }
+
+    @Test
+    void invalidLogin_shouldShowErrorMessage() {
+        step("Open login page");
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.open();
+
+        step("Login with invalid password");
+        loginPage.login("tomsmith", "WrongPassword");
+
+        step("Verify error message");
+        assertTrue(
+                loginPage.getFlashMessage().toLowerCase().contains("your password is invalid"),
+                "Expected invalid password message, but got: " + loginPage.getFlashMessage()
         );
     }
 }

@@ -14,7 +14,7 @@ public class BaseTest {
     @BeforeEach
     public void setUp(TestInfo testInfo) {
         log("Start: " + testInfo.getDisplayName());
-        driver = DriverFactory.createChromeDriver();
+        driver = DriverFactory.getDriver();
     }
 
     @AfterEach
